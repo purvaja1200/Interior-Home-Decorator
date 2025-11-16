@@ -1,0 +1,46 @@
+<!-- templates/plan_results.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Generated Plans</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Generated Layouts</h1>
+    <div id="plansContainer" class="grid"></div>
+    <p class="muted">Click a plan to customize styles for that layout.</p>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    const plans = JSON.parse(localStorage.getItem('plans') || '[]');
+    const container = document.getElementById('plansContainer');
+
+    if (!plans.length) {
+      container.innerHTML = '<p>No plans found. Go back and generate.</p>';
+    } else {
+      plans.forEach(plan => {
+        const card = document.createElement('div');
+        card.className = 'planCard';
+        card.innerHTML = `<h3>Plan ${plan.id}</h3>
+          <div class="thumb" id="svg-${plan.id}"></div>
+          <button class="nextBtn" data-id="${plan.id}">Customize</button>`;
+        container.appendChild(card);
+        // render small SVG
+        renderPlanSVG(plan, `svg-${plan.id}`, 220);
+      });
+
+      container.addEventListener('click', (e) => {
+        if (e.target.matches('.nextBtn')) {
+          const id = e.target.dataset.id;
+          // set selected and go to customize page
+          localStorage.setItem('selectedPlan', id);
+          window.location = `/customize/${id}`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

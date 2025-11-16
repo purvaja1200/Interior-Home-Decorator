@@ -1,0 +1,55 @@
+<!-- templates/floor_select.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Select Rooms</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Select rooms & options</h1>
+    <form id="roomForm">
+      <input type="hidden" id="area" value="600">
+      <div>
+        <label><input type="checkbox" name="rooms" value="hall" checked> Hall</label>
+        <label><input type="checkbox" name="rooms" value="kitchen" checked> Kitchen</label>
+        <label><input type="checkbox" name="rooms" value="bedroom" checked> Bedroom</label>
+        <label><input type="checkbox" name="rooms" value="toilet"> Toilet</label>
+        <label><input type="checkbox" name="rooms" value="bathroom"> Bathroom</label>
+        <label><input type="checkbox" name="rooms" value="gallery"> Gallery</label>
+      </div>
+      <div>
+        <label>Number of variants:
+          <select id="variants"><option>4</option><option>5</option><option>6</option></select>
+        </label>
+      </div>
+      <br>
+      <button type="button" id="generate">Generate Plans</button>
+    </form>
+  </main>
+
+  <script>
+    // if area passed by query param, set input
+    const params = new URLSearchParams(location.search);
+    if (params.get('area')) {
+      document.getElementById('area').value = params.get('area');
+    }
+
+    document.getElementById('generate').addEventListener('click', async () => {
+      const area = Number(document.getElementById('area').value || 600);
+      const variants = Number(document.getElementById('variants').value || 4);
+      const checked = Array.from(document.querySelectorAll('input[name="rooms"]:checked')).map(n=>n.value);
+      const resp = await fetch('/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({area, rooms: checked, variants, seed: Date.now() % 100000})
+      });
+      const data = await resp.json();
+      // save plans to localStorage and go to results
+      localStorage.setItem('plans', JSON.stringify(data.plans));
+      window.location = '/plan_results';
+    });
+  </script>
+</body>
+</html>

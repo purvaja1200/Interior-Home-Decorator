@@ -1,0 +1,84 @@
+<!-- templates/customize.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Customize Plan</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Customize</h1>
+    <div class="layout">
+      <div id="planArea" class="largeCanvas"></div>
+      <aside class="controls">
+        <h3>Style cube</h3>
+        <div>
+          <label>Wall color: <input id="wallColor" type="color" value="#e8e8e8"></label>
+        </div>
+        <div>
+          <label>Floor color: <input id="floorColor" type="color" value="#d0c0a8"></label>
+        </div>
+        <div>
+          <label>Wallpaper:
+            <select id="wallpaper">
+              <option value="">None</option>
+              <option value="stripes">Stripes</option>
+              <option value="dots">Dots</option>
+              <option value="wood">Wood</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>Lighting:
+            <select id="lightOption"><option>Bright</option><option>Warm</option><option>Dim</option></select>
+          </label>
+        </div>
+        <button id="apply">Apply to Plan</button>
+        <button id="prevVariant">Previous Variant</button>
+        <button id="nextVariant">Next Variant</button>
+      </aside>
+    </div>
+    <div id="message" class="muted"></div>
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    // load plans from localStorage
+    const plans = JSON.parse(localStorage.getItem('plans') || '[]');
+    const selectedId = localStorage.getItem('selectedPlan');
+    let currentIndex = plans.findIndex(p => p.id === selectedId);
+    if (currentIndex === -1) currentIndex = 0;
+
+    function loadCurrent() {
+      const plan = plans[currentIndex];
+      renderPlanSVG(plan, 'planArea', 600, {wallColor: '#e8e8e8', floorColor: '#d0c0a8'});
+      document.getElementById('message').textContent = `Viewing plan ${plan.id} (${currentIndex+1}/${plans.length})`;
+    }
+
+    document.getElementById('apply').addEventListener('click', () => {
+      const wallColor = document.getElementById('wallColor').value;
+      const floorColor = document.getElementById('floorColor').value;
+      const wallpaper = document.getElementById('wallpaper').value;
+      // re-render with styles
+      const plan = plans[currentIndex];
+      renderPlanSVG(plan, 'planArea', 600, {wallColor, floorColor, wallpaper});
+      // also save styled version
+      plan.style = {wallColor, floorColor, wallpaper};
+      localStorage.setItem('plans', JSON.stringify(plans));
+    });
+
+    document.getElementById('prevVariant').addEventListener('click', () => {
+      if (currentIndex > 0) currentIndex--;
+      loadCurrent();
+    });
+    document.getElementById('nextVariant').addEventListener('click', () => {
+      if (currentIndex < plans.length - 1) currentIndex++;
+      loadCurrent();
+    });
+
+    // init
+    loadCurrent();
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Interior Decorator — Enter Area</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Enter your area</h1>
+    <label>
+      Total area (sq ft):
+      <input id="area" type="number" value="600" min="50">
+    </label>
+    <br>
+    <button id="toRooms">Next: Select Rooms & Floor</button>
+  </main>
+
+  <script>
+    document.getElementById('toRooms').addEventListener('click', () => {
+      const area = document.getElementById('area').value || 600;
+      // pass area via query params
+      window.location = `/floor_select?area=${area}`;
+    });
+  </script>
+</body>
+</html>
