@@ -4,7 +4,10 @@ import random
 import math
 import uuid
 
-app = Flask(__name__)
+# 🛑 FIX: Explicitly set both template_folder and static_folder.
+# - template_folder='backend/templates' to find your HTML files.
+# - static_folder='static' to find your CSS/JS files (relative to app.py).
+app = Flask(__name__, template_folder='backend/templates', static_folder='static')
 
 # Simple plan generation algorithm:
 # - We represent the whole area as a rectangle (width x height with area ~ user_area)
@@ -82,6 +85,7 @@ def generate_plans(area, rooms_requested, variants=4, seed=None):
 
 @app.route("/")
 def index():
+    # This is the root code you requested. It simply renders the index.html file.
     return render_template("index.html")
 
 @app.route("/floor_select")
@@ -105,5 +109,5 @@ def customize(plan_id):
     return render_template("customize.html", plan_id=plan_id)
 
 # static files served automatically; run app
-if __name__ == "__main__":
+if __name__ == "_main_":
     app.run(debug=True)
